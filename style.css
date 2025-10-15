@@ -1,0 +1,11 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 50px;
+  background: #e3f2fd;
+}
+a {
+  display: inline-block;
+  margin-top: 20px;
+  color: #1976d2;
+}
