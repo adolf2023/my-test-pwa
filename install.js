@@ -1,29 +1,47 @@
-// Реєстрація Service Worker
+// Реєструємо Service Worker
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+    navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log('Service Worker зареєстровано:', reg))
+    .catch(err => console.log('Помилка реєстрації SW:', err));
 }
 
 let deferredPrompt;
 const installButton = document.getElementById('installButton');
 
-// Показуємо кнопку, якщо можна встановити
+// Слухаємо подію перед інсталяцією
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installButton.classList.remove('hidden');
+    // Браузер не показує стандартний банер, відклали його
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Робимо кнопку видимою
+    installButton.classList.remove('hidden');
 });
 
-// Обробник кліку
+// Клік на кнопку "Встановити на пристрій"
 installButton.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('Користувач вибрав:', outcome);
-    deferredPrompt = null;
-  }
+    if (deferredPrompt) {
+        // Показуємо стандартне вікно встановлення
+        deferredPrompt.prompt();
+
+        // Чекаємо вибору користувача
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('Користувач встановив додаток');
+        } else {
+            console.log('Користувач відмовився від встановлення');
+        }
+
+        // Очищаємо подію
+        deferredPrompt = null;
+
+        // Ховаємо кнопку після натискання
+        installButton.classList.add('hidden');
+    }
 });
 
-// Ховаємо кнопку, якщо вже встановлено
+// Ховаємо кнопку, якщо додаток вже встановлено
 window.addEventListener('appinstalled', () => {
-  installButton.classList.add('hidden');
+    console.log('Додаток вже встановлено');
+    installButton.classList.add('hidden');
 });
